@@ -1,0 +1,13 @@
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\bin\Debug\MyBookshelf.exe.config
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\bin\Debug\MyBookshelf.exe
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\bin\Debug\MyBookshelf.pdb
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.csprojAssemblyReference.cache
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.Properties.Resources.resources
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.csproj.GenerateResource.cache
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.exe
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.pdb
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\bin\Debug\Database.mdf
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\bin\Debug\Database_log.ldf
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.Login.resources
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.Register.resources
+C:\Users\Kamil\Desktop\MyBookshelf\MyBookshelf\obj\Debug\MyBookshelf.Main.resources
