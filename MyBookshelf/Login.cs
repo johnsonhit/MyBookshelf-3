@@ -102,47 +102,6 @@ namespace MyBookshelf
             this.Hide();
             reg.ShowDialog();
             this.Close();
-            /*
-            LoginTXT.Text = LoginTXT.Text.Trim();
-            PasswordTXT.Text = PasswordTXT.Text.Trim();
-            Regex regexLogin = new Regex(@"^[A-Za-z0-9]{4,20}$");
-            Regex regexPwd = new Regex(@"^[\w\*\/\\\?\:\.\^\+\=]{6,20}$");
-            if (LoginTXT.Text == "" || PasswordTXT.Text == "" || !regexLogin.IsMatch(LoginTXT.Text) || !regexPwd.IsMatch(PasswordTXT.Text))
-            {
-                MessageBox.Show("Błąd");
-                return;
-            }
-
-            sqlConnection = new SqlConnection(connectionString);
-            string sql = "SELECT COUNT(Login) FROM Users WHERE Login=@log";
-            sqlCommand = new SqlCommand(sql, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@log", LoginTXT.Text);
-
-            sqlConnection.Open();
-
-            if (sqlCommand.ExecuteScalar().ToString()=="1")
-            {
-                MessageBox.Show("Błąd");
-                sqlConnection.Close();
-                return;
-            }
-
-            //Hashowanie hasła
-            Hash hash = new Hash();
-            var salt = hash.PasswordSalt;
-            var pass = hash.EncodePassword(PasswordTXT.Text, salt);
-
-            sql = "INSERT INTO Users (Login,Password,Salt) VALUES (@log,@pwd,@slt)";
-            sqlCommand = new SqlCommand(sql, sqlConnection);
-            sqlCommand.Parameters.Clear();
-            sqlCommand.Parameters.AddWithValue("@log", LoginTXT.Text);
-            sqlCommand.Parameters.AddWithValue("@pwd", pass.ToString());
-            sqlCommand.Parameters.AddWithValue("@slt", salt.ToString());
-
-            sqlCommand.ExecuteNonQuery();
-
-            sqlConnection.Close();
-            */
         }
 
 
