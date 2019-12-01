@@ -33,10 +33,58 @@ namespace MyBookshelf
             SNameTXT.Text = SNameTXT.Text.Trim();
             Regex regexLogin = new Regex(@"^[A-Za-z0-9]{4,20}$");
             Regex regexPwd = new Regex(@"^[\w\*\/\\\?\:\.\^\+\=]{5,20}$");
-            Regex regexEmail = new Regex(@"^[\w]{1,30}@[\w]{1,10}\.[\w]{1,8}$");
-            if (LoginTXT.Text == "" || PasswordTXT.Text == "" || EmailTXT.Text == "" || !regexLogin.IsMatch(LoginTXT.Text) || !regexPwd.IsMatch(PasswordTXT.Text) || !regexEmail.IsMatch(EmailTXT.Text))
+            Regex regexEmail = new Regex(@"^[\w@]{1,50}$");
+
+
+            int error = 0;
+            if (LoginTXT.Text == "" || !regexLogin.IsMatch(LoginTXT.Text))
             {
-                MessageBox.Show("Błąd");
+                labelLoginBottom.BackColor = Color.Red;
+                error++;
+            }
+            else
+            {
+                labelLoginBottom.BackColor = Color.DarkGray;
+            }
+            if (PasswordTXT.Text == "" || !regexPwd.IsMatch(PasswordTXT.Text))
+            {
+                labelPassBottom.BackColor = Color.Red;
+                error++;
+            }
+            else
+            {
+                labelPassBottom.BackColor = Color.DarkGray;
+            }
+            if (FNameTXT.Text == "")
+            {
+                labelFnameBottom.BackColor = Color.Red;
+                error++;
+            }
+            else
+            {
+                labelFnameBottom.BackColor = Color.DarkGray;
+            }
+            if (SNameTXT.Text == "")
+            {
+                labelSnameBottom.BackColor = Color.Red;
+                error++;
+            }
+            else
+            {
+                labelSnameBottom.BackColor = Color.DarkGray;
+            }
+            if (EmailTXT.Text == "" || !regexEmail.IsMatch(EmailTXT.Text))
+            {
+                labelEmailBottom.BackColor = Color.Red;
+                error++;
+            }
+            else
+            {
+                labelEmailBottom.BackColor = Color.DarkGray;
+            }
+
+            if (error > 0)
+            {
                 return;
             }
 
@@ -87,11 +135,13 @@ namespace MyBookshelf
 
             this.Hide();
             Login login = new Login();
-            login.label3.Visible = true;
+            login.LoginTXT.Text = LoginTXT.Text;
+            login.PasswordTXT.Text = PasswordTXT.Text;
+            login.labelLogin.Visible = false;
+            login.LabelPass.Visible = false;
             login.ShowDialog();
             login.Dispose();
             this.Close();
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -108,7 +158,7 @@ namespace MyBookshelf
         {
             var textbox = sender as TextBox;
             var parent = textbox.Parent;
-            
+
             foreach (Control item in parent.Controls)
             {
                 if (item is Label)
@@ -140,6 +190,7 @@ namespace MyBookshelf
         private void LoginPanel_MouseClick(object sender, MouseEventArgs e)
         {
             var panel = sender as Panel;
+            panel.Focus();
             foreach (Control item in panel.Controls)
             {
                 if (item is Panel)
@@ -170,5 +221,9 @@ namespace MyBookshelf
             }
         }
 
+        private void Register_Load(object sender, EventArgs e)
+        {
+            panelRegister.Select();
+        }
     }
 }

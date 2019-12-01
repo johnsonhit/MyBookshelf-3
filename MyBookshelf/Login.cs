@@ -30,7 +30,6 @@ namespace MyBookshelf
         //Logowanie
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            
             /*if (tries == 0)
             {
                 Login.ActiveForm.Close();
@@ -92,8 +91,9 @@ namespace MyBookshelf
                 main.NameLabel.Text = FName + "\n" + SName;
                 this.Hide();
                 main.ShowDialog();
+                Dispose();
                 this.Close();
-           //}
+            //}
         }
 
 
@@ -101,6 +101,7 @@ namespace MyBookshelf
         {
             this.Hide();
             reg.ShowDialog();
+            Dispose();
             this.Close();
         }
 
@@ -161,6 +162,7 @@ namespace MyBookshelf
         private void LoginPanel_MouseClick(object sender, MouseEventArgs e)
         {
             var panel = sender as Panel;
+            panel.Focus();
             foreach (Control item in panel.Controls)
             {
                 if (item is Panel)
@@ -191,5 +193,9 @@ namespace MyBookshelf
             }
         }
 
+        private void Login_Load(object sender, EventArgs e)
+        {
+            panelLogin.Select();
+        }
     }
 }

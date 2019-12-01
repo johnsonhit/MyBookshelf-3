@@ -41,7 +41,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.LoginPanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panelLogin.SuspendLayout();
@@ -105,7 +104,7 @@
             this.LoginPanel.Location = new System.Drawing.Point(0, 0);
             this.LoginPanel.Name = "LoginPanel";
             this.LoginPanel.Size = new System.Drawing.Size(299, 245);
-            this.LoginPanel.TabIndex = 6;
+            this.LoginPanel.TabIndex = 0;
             this.LoginPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LoginPanel_MouseClick);
             // 
             // panel2
@@ -189,7 +188,6 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.DarkGreen;
             this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.label3);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(299, 42);
@@ -206,17 +204,6 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Logowanie";
             // 
-            // label3
-            // 
-            this.label3.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label3.Location = new System.Drawing.Point(143, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(130, 23);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Zarejestrowano";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label3.Visible = false;
-            // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -230,6 +217,7 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
+            this.Load += new System.EventHandler(this.Login_Load);
             this.LoginPanel.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -242,21 +230,19 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox LoginTXT;
         private System.Windows.Forms.Button LoginButton;
         private System.Windows.Forms.Button RegisterButton;
         private System.Windows.Forms.Panel LoginPanel;
-        public System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panelLogin;
-        private System.Windows.Forms.Label labelLogin;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label LabelPass;
-        private System.Windows.Forms.TextBox PasswordTXT;
         private System.Windows.Forms.Label label7;
+        public System.Windows.Forms.TextBox LoginTXT;
+        public System.Windows.Forms.TextBox PasswordTXT;
+        public System.Windows.Forms.Label labelLogin;
+        public System.Windows.Forms.Label LabelPass;
     }
 }
 
