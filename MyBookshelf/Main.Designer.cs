@@ -213,7 +213,7 @@
             this.MainView.TabIndex = 0;
             this.MainView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellClick);
             this.MainView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellContentClick);
-            this.MainView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellContentDoubleClick);
+            this.MainView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellDoubleClick);
             this.MainView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainView_ColumnHeaderMouseClick);
             this.MainView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.MainView_DataError);
             // 

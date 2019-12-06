@@ -170,7 +170,6 @@ namespace MyBookshelf
             }
         }
 
-
         private void FindEnter(object sender, EventArgs e)
         {
             var textbox = sender as TextBox;

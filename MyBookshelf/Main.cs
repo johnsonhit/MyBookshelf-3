@@ -179,12 +179,12 @@ namespace MyBookshelf
                     dt.Rows.Remove(dr);
                     senderGrid.ReadOnly = true;
                     //dt.AcceptChanges();
-                    BooksButton.Text = dt.Rows.Count.ToString();
+                    BooksButton.Text = "Książki     " + dt.Rows.Count.ToString();
                     CheckDate();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    //MessageBox.Show(ex.ToString());
                     //MessageBox.Show("BŁĄD");
                     isAdded = false;
                     isEdit = false;
@@ -232,7 +232,6 @@ namespace MyBookshelf
                     isAdded = true;
                     MainView.ReadOnly = true;
                 }
-
                 isAdded = true;
                 DataRow dr = dt.NewRow();
                 dr["Login"] = login;
@@ -245,7 +244,7 @@ namespace MyBookshelf
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                //MessageBox.Show(ex.ToString());
                 MessageBox.Show("Żadne pole nie może pozostać puste");
             }
 
@@ -255,77 +254,73 @@ namespace MyBookshelf
         {
             try
             {
-                using (sqlConnection = new SqlConnection(connectionString))
+                if (!isAdded && !isEdit)
                 {
-                    MainView.AllowUserToAddRows = true;
-                    //Update bazy danych
-                    foreach (DataRow item in dt.Rows)
+                    using (sqlConnection = new SqlConnection(connectionString))
                     {
-                        DateTime date = (DateTime)item[4];
-                        if (date.Date < DateTime.Today.Date)
+                        //Update bazy danych
+                        sqlConnection.Open();
+                        //Adapter do porównania bazy danych z DataTable
+                        using (SqlDataAdapter adapter = new SqlDataAdapter())
                         {
-                            MessageBox.Show("Wprowadź prawidłową datę");
-                            return;
-                        }
-                    }
-                    sqlConnection.Open();
-                    //Adapter do porównania bazy danych z DataTable
-                    using (SqlDataAdapter adapter = new SqlDataAdapter())
-                    {
-                        adapter.SelectCommand = new SqlCommand("SELECT * FROM Books", sqlConnection);
-                        using (SqlCommandBuilder builder = new SqlCommandBuilder(adapter))
-                        {
-                            adapter.Update(dt);
-
-                            //Usuwanie z bazy danych
-                            if (listDeleted.Count != 0)
+                            adapter.SelectCommand = new SqlCommand("SELECT * FROM Books", sqlConnection);
+                            using (SqlCommandBuilder builder = new SqlCommandBuilder(adapter))
                             {
-                                foreach (var index in listDeleted)
-                                {
-                                    adapter.DeleteCommand = new SqlCommand("DELETE FROM Books WHERE Id=@id", sqlConnection);
-                                    adapter.DeleteCommand.Parameters.Clear();
-                                    adapter.DeleteCommand.Parameters.AddWithValue("@id", index);
-                                    adapter.DeleteCommand.ExecuteNonQuery();
-                                }
-                                listDeleted.Clear();
-                            }
+                                adapter.Update(dt);
 
-                            MainView.DataSource = dt;
+                                //Usuwanie z bazy danych
+                                if (listDeleted.Count != 0)
+                                {
+                                    foreach (var index in listDeleted)
+                                    {
+                                        adapter.DeleteCommand = new SqlCommand("DELETE FROM Books WHERE Id=@id", sqlConnection);
+                                        adapter.DeleteCommand.Parameters.Clear();
+                                        adapter.DeleteCommand.Parameters.AddWithValue("@id", index);
+                                        adapter.DeleteCommand.ExecuteNonQuery();
+                                    }
+                                    listDeleted.Clear();
+                                }
+
+                                MainView.DataSource = dt;
+                                sqlConnection.Close();
+                            }
+                        }
+
+                        //Update licznika książek
+                        if (login != "admin")
+                        {
+                            string sql = "SELECT COUNT(Book) FROM Books WHERE Login=@log";
+                            sqlConnection.Open();
+                            sqlCommand = new SqlCommand(sql, sqlConnection);
+
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("@log", login);
+                            BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
                             sqlConnection.Close();
                         }
+                        else
+                        {
+                            string sql = "SELECT COUNT(Book) FROM Books";
+                            sqlConnection.Open();
+                            sqlCommand = new SqlCommand(sql, sqlConnection);
+
+                            BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
+                            sqlConnection.Close();
+                        }
+
+                        MainView.AllowUserToAddRows = false;
+                        MainView.DataSource = dt;
+                        CheckDate();
                     }
-
-                    //Update licznika książek
-                    if (login!="admin")
-                    {
-                        string sql = "SELECT COUNT(Book) FROM Books WHERE Login=@log";
-                        sqlConnection.Open();
-                        sqlCommand = new SqlCommand(sql, sqlConnection);
-
-                        sqlCommand.Parameters.Clear();
-                        sqlCommand.Parameters.AddWithValue("@log", login);
-                        BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
-                        sqlConnection.Close();
-                    }
-                    else
-                    {
-                        string sql = "SELECT COUNT(Book) FROM Books";
-                        sqlConnection.Open();
-                        sqlCommand = new SqlCommand(sql, sqlConnection);
-
-                        BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
-                        sqlConnection.Close();
-                    }
-
                     MainView.AllowUserToAddRows = false;
-                    MainView.DataSource = dt;
-                    CheckDate();
                 }
+
+
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                //MessageBox.Show(ex.ToString());
                 MainView.AllowUserToAddRows = false;
                 MessageBox.Show("Żadne pole nie może pozostać puste");
             }
@@ -350,9 +345,9 @@ namespace MyBookshelf
             var senderGrid = (DataGridView)sender;
             if (!DateTime.TryParse(senderGrid.Rows[e.RowIndex].Cells["ReturnTime"].Value.ToString(), out _))
             {
-                MessageBox.Show("Data powinna być w formacie dd.mm.rrrr");
+                //MessageBox.Show("Data powinna być w formacie dd.mm.rrrr");
                 //senderGrid.Rows[e.RowIndex].Cells[6].Value = senderGrid.Rows[e.RowIndex].Cells[6].Tag;
-                senderGrid.Rows[e.RowIndex].Cells[6].Value = DateTime.Today.Date.ToString();
+                senderGrid.Rows[e.RowIndex].Cells[4].Value = DateTime.Today.Date.ToString();
             }
         }
 
@@ -372,6 +367,7 @@ namespace MyBookshelf
                     DateTime date = (DateTime)senderGrid.Rows[rowIndex].Cells["ReturnTime"].Value;
                     if (date.Date < DateTime.Today.Date)
                     {
+                        senderGrid.Rows[rowIndex].Cells["ReturnTime"].Selected = true;
                         MessageBox.Show("Wprowadź prawidłową datę");
                         return;
                     }
@@ -383,11 +379,12 @@ namespace MyBookshelf
                         isEdit = false;
                         isAdded = false;
                         senderGrid.ReadOnly = true;
+
                     }
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Żadne pole nie może pozostać puste 1");
+                    MessageBox.Show("Żadne pole nie może pozostać puste");
                 }
             }
         }
@@ -400,34 +397,6 @@ namespace MyBookshelf
             AddButton.Enabled = false;
             SaveButton.Enabled = false;
 
-        }
-
-        private void MainView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            var senderGrid = (DataGridView)sender;
-            if (e.ColumnIndex == 5 && e.RowIndex >= 0)
-            {
-                try
-                {
-                    sqlConnection = new SqlConnection(connectionString);
-                    string sql = "SELECT ID FROM Libraries WHERE Name=@name";
-                    sqlCommand = new SqlCommand(sql, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@name", senderGrid.Rows[e.RowIndex].Cells[5].Value.ToString());
-                    sqlConnection.Open();
-                    var index = sqlCommand.ExecuteScalar();
-                    sqlConnection.Close();
-                    LibrariesButton_Click(sender, e);
-                    for (int i = 0; i < LibrariesView.Columns.Count; i++)
-                    {
-                        LibrariesView.Rows[(int)index].Cells[i].Style.BackColor = Color.LightGreen;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
         }
 
         private void LibrariesView_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -444,6 +413,41 @@ namespace MyBookshelf
         private void MainView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             CheckDate();
+        }
+
+        private void MainView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var senderGrid = (DataGridView)sender;
+            if (e.ColumnIndex == 5 && e.RowIndex >= 0 && !isEdit && !isAdded)
+            {
+                try
+                {
+                    sqlConnection = new SqlConnection(connectionString);
+                    string sql = "SELECT ID FROM Libraries WHERE Name=@name";
+                    sqlCommand = new SqlCommand(sql, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@name", senderGrid.Rows[e.RowIndex].Cells[5].Value.ToString());
+                    sqlConnection.Open();
+                    var index = sqlCommand.ExecuteScalar();
+                    sqlConnection.Close();
+                    LibrariesButton_Click(sender, e);
+                    for (int i = 0; i < LibrariesView.Rows.Count; i++)
+                    {
+                        for (int j = 0; j < LibrariesView.Columns.Count; j++)
+                        {
+                            LibrariesView.Rows[i].Cells[j].Style.BackColor = default;
+                        }
+                    }
+                    for (int i = 0; i < LibrariesView.Columns.Count; i++)
+                    {
+                        LibrariesView.Rows[(int)index].Cells[i].Style.BackColor = Color.LightGreen;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show(ex.ToString());
+                }
+            }
         }
     }
 }
