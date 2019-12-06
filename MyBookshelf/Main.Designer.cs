@@ -28,7 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.LeftPanel = new System.Windows.Forms.Panel();
             this.SaveButton = new System.Windows.Forms.Button();
             this.AddButton = new System.Windows.Forms.Button();
@@ -39,9 +42,24 @@
             this.LogoutButton = new System.Windows.Forms.Button();
             this.RightPanel = new System.Windows.Forms.Panel();
             this.MainView = new System.Windows.Forms.DataGridView();
+            this.RightPanelLibraries = new System.Windows.Forms.Panel();
+            this.LibrariesView = new System.Windows.Forms.DataGridView();
+            this.idDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.streetDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.zIPCodeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.phoneDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.librariesBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.databaseDataSet = new MyBookshelf.DatabaseDataSet();
+            this.librariesTableAdapter = new MyBookshelf.DatabaseDataSetTableAdapters.LibrariesTableAdapter();
             this.LeftPanel.SuspendLayout();
             this.RightPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainView)).BeginInit();
+            this.RightPanelLibraries.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LibrariesView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.librariesBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.databaseDataSet)).BeginInit();
             this.SuspendLayout();
             // 
             // LeftPanel
@@ -62,7 +80,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.SaveButton.BackColor = System.Drawing.Color.Orange;
             this.SaveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SaveButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.SaveButton.ForeColor = System.Drawing.Color.White;
@@ -72,11 +90,12 @@
             this.SaveButton.TabIndex = 2;
             this.SaveButton.Text = "Zapisz";
             this.SaveButton.UseVisualStyleBackColor = false;
+            this.SaveButton.Visible = false;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // AddButton
             // 
-            this.AddButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.AddButton.BackColor = System.Drawing.Color.Orange;
             this.AddButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AddButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.AddButton.ForeColor = System.Drawing.Color.White;
@@ -86,11 +105,12 @@
             this.AddButton.TabIndex = 1;
             this.AddButton.Text = "Dodaj";
             this.AddButton.UseVisualStyleBackColor = false;
+            this.AddButton.Visible = false;
             this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
             // ExitButton
             // 
-            this.ExitButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.ExitButton.BackColor = System.Drawing.Color.Orange;
             this.ExitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ExitButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.ExitButton.ForeColor = System.Drawing.Color.White;
@@ -115,7 +135,7 @@
             // 
             // LibrariesButton
             // 
-            this.LibrariesButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.LibrariesButton.BackColor = System.Drawing.Color.Orange;
             this.LibrariesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.LibrariesButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.LibrariesButton.ForeColor = System.Drawing.Color.White;
@@ -129,7 +149,7 @@
             // 
             // BooksButton
             // 
-            this.BooksButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.BooksButton.BackColor = System.Drawing.Color.Orange;
             this.BooksButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BooksButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.BooksButton.ForeColor = System.Drawing.Color.White;
@@ -143,7 +163,7 @@
             // 
             // LogoutButton
             // 
-            this.LogoutButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.LogoutButton.BackColor = System.Drawing.Color.Orange;
             this.LogoutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.LogoutButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.LogoutButton.ForeColor = System.Drawing.Color.White;
@@ -193,23 +213,135 @@
             this.MainView.TabIndex = 0;
             this.MainView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellClick);
             this.MainView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellContentClick);
+            this.MainView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellContentDoubleClick);
+            this.MainView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainView_ColumnHeaderMouseClick);
             this.MainView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.MainView_DataError);
-            this.MainView.RowLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_RowLeave);
+            // 
+            // RightPanelLibraries
+            // 
+            this.RightPanelLibraries.Controls.Add(this.LibrariesView);
+            this.RightPanelLibraries.Location = new System.Drawing.Point(135, 1);
+            this.RightPanelLibraries.Name = "RightPanelLibraries";
+            this.RightPanelLibraries.Size = new System.Drawing.Size(846, 595);
+            this.RightPanelLibraries.TabIndex = 2;
+            this.RightPanelLibraries.Visible = false;
+            // 
+            // LibrariesView
+            // 
+            this.LibrariesView.AutoGenerateColumns = false;
+            this.LibrariesView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.LibrariesView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.LibrariesView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.idDataGridViewTextBoxColumn,
+            this.nameDataGridViewTextBoxColumn,
+            this.cityDataGridViewTextBoxColumn,
+            this.streetDataGridViewTextBoxColumn,
+            this.zIPCodeDataGridViewTextBoxColumn,
+            this.phoneDataGridViewTextBoxColumn});
+            this.LibrariesView.DataSource = this.librariesBindingSource;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(2);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.LibrariesView.DefaultCellStyle = dataGridViewCellStyle2;
+            this.LibrariesView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LibrariesView.Location = new System.Drawing.Point(0, 0);
+            this.LibrariesView.Name = "LibrariesView";
+            this.LibrariesView.ReadOnly = true;
+            this.LibrariesView.RowHeadersVisible = false;
+            this.LibrariesView.Size = new System.Drawing.Size(846, 595);
+            this.LibrariesView.TabIndex = 0;
+            this.LibrariesView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LibrariesView_CellClick);
+            // 
+            // idDataGridViewTextBoxColumn
+            // 
+            this.idDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.idDataGridViewTextBoxColumn.DataPropertyName = "Id";
+            this.idDataGridViewTextBoxColumn.HeaderText = "ID";
+            this.idDataGridViewTextBoxColumn.Name = "idDataGridViewTextBoxColumn";
+            this.idDataGridViewTextBoxColumn.ReadOnly = true;
+            this.idDataGridViewTextBoxColumn.Visible = false;
+            this.idDataGridViewTextBoxColumn.Width = 30;
+            // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            this.nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            this.nameDataGridViewTextBoxColumn.HeaderText = "Nazwa";
+            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            this.nameDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // cityDataGridViewTextBoxColumn
+            // 
+            this.cityDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.cityDataGridViewTextBoxColumn.DataPropertyName = "City";
+            this.cityDataGridViewTextBoxColumn.HeaderText = "Miasto";
+            this.cityDataGridViewTextBoxColumn.Name = "cityDataGridViewTextBoxColumn";
+            this.cityDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // streetDataGridViewTextBoxColumn
+            // 
+            this.streetDataGridViewTextBoxColumn.DataPropertyName = "Street";
+            this.streetDataGridViewTextBoxColumn.HeaderText = "Ulica";
+            this.streetDataGridViewTextBoxColumn.Name = "streetDataGridViewTextBoxColumn";
+            this.streetDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // zIPCodeDataGridViewTextBoxColumn
+            // 
+            this.zIPCodeDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.zIPCodeDataGridViewTextBoxColumn.DataPropertyName = "ZIPCode";
+            this.zIPCodeDataGridViewTextBoxColumn.HeaderText = "Kod";
+            this.zIPCodeDataGridViewTextBoxColumn.Name = "zIPCodeDataGridViewTextBoxColumn";
+            this.zIPCodeDataGridViewTextBoxColumn.ReadOnly = true;
+            this.zIPCodeDataGridViewTextBoxColumn.Width = 70;
+            // 
+            // phoneDataGridViewTextBoxColumn
+            // 
+            this.phoneDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.phoneDataGridViewTextBoxColumn.DataPropertyName = "Phone";
+            this.phoneDataGridViewTextBoxColumn.HeaderText = "Telefon";
+            this.phoneDataGridViewTextBoxColumn.Name = "phoneDataGridViewTextBoxColumn";
+            this.phoneDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // librariesBindingSource
+            // 
+            this.librariesBindingSource.DataMember = "Libraries";
+            this.librariesBindingSource.DataSource = this.databaseDataSet;
+            // 
+            // databaseDataSet
+            // 
+            this.databaseDataSet.DataSetName = "DatabaseDataSet";
+            this.databaseDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // librariesTableAdapter
+            // 
+            this.librariesTableAdapter.ClearBeforeFill = true;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(981, 596);
+            this.Controls.Add(this.RightPanelLibraries);
             this.Controls.Add(this.RightPanel);
             this.Controls.Add(this.LeftPanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Main";
+            this.Text = "Biblioteka";
             this.Load += new System.EventHandler(this.Main_Load);
             this.LeftPanel.ResumeLayout(false);
             this.RightPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainView)).EndInit();
+            this.RightPanelLibraries.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.LibrariesView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.librariesBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.databaseDataSet)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -226,5 +358,16 @@
         private System.Windows.Forms.DataGridView MainView;
         private System.Windows.Forms.Button AddButton;
         private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.Panel RightPanelLibraries;
+        private System.Windows.Forms.DataGridView LibrariesView;
+        private DatabaseDataSet databaseDataSet;
+        private System.Windows.Forms.BindingSource librariesBindingSource;
+        private DatabaseDataSetTableAdapters.LibrariesTableAdapter librariesTableAdapter;
+        private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cityDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn streetDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn zIPCodeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn phoneDataGridViewTextBoxColumn;
     }
 }

@@ -14,14 +14,13 @@ namespace MyBookshelf
 {
     public partial class Login : Form
     {
-        readonly Register reg = new Register();
         readonly string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security = True";
-        SqlConnection sqlConnection;
-        SqlCommand sqlCommand;
-        int tries = 5;
-        bool isValid = false;
-        string FName;
-        string SName;
+        //private SqlConnection sqlConnection;
+        private int tries = 5;
+        private bool isValid = false;
+        private string FName;
+        private string SName;
+        //SqlDataReader dataReader;
         public Login()
         {
             InitializeComponent();
@@ -30,7 +29,7 @@ namespace MyBookshelf
         //Logowanie
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            /*if (tries == 0)
+            if (tries == 0)
             {
                 Login.ActiveForm.Close();
             }
@@ -46,63 +45,69 @@ namespace MyBookshelf
             }
             Hash hash = new Hash();
 
-            sqlConnection = new SqlConnection(connectionString);
-            string sql = "SELECT Password, Salt, FName, SName FROM Users WHERE Login=@log";
-            sqlCommand = new SqlCommand(sql, sqlConnection);
-            sqlCommand.Parameters.Clear();
-            sqlCommand.Parameters.AddWithValue("@log", LoginTXT.Text);
-
-            sqlConnection.Open();
-            SqlDataReader dataReader = sqlCommand.ExecuteReader();
-
-            if (!dataReader.HasRows)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                tries--;
-                MessageBox.Show(String.Format("Błędna nazwa użytkownika lub hasło.\n Pozostało prób: {0}", tries));
-                sqlConnection.Close();
-                return;
-            }
+                string sql = "SELECT Password, Salt, FName, SName FROM Users WHERE Login=@log";
 
-            while (dataReader.Read())
-            {
-                FName = dataReader[2].ToString();
-                SName = dataReader[3].ToString();
-                var tempSalt = dataReader[1];
-                if (hash.EncodePassword(PasswordTXT.Text, tempSalt.ToString()) == dataReader[0].ToString())
+                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
-                    tries = 5;
-                    isValid = true;
-                }
-                else
-                {
-                    tries--;
-                    MessageBox.Show(String.Format("Błędna nazwa użytkownika lub hasło.\nPozostało prób: {0}", tries));
-                    sqlConnection.Close();
-                    return;
+                    sqlCommand.Parameters.Clear();
+                    sqlCommand.Parameters.AddWithValue("@log", LoginTXT.Text);
+
+                    connection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (!dataReader.HasRows)
+                        {
+                            tries--;
+                            MessageBox.Show(String.Format("Błędna nazwa użytkownika lub hasło.\n Pozostało prób: {0}", tries));
+                            return;
+                        }
+
+                        while (dataReader.Read())
+                        {
+                            FName = dataReader[2].ToString();
+                            SName = dataReader[3].ToString();
+                            var tempSalt = dataReader[1];
+                            if (hash.EncodePassword(PasswordTXT.Text, tempSalt.ToString()) == dataReader[0].ToString())
+                            {
+                                tries = 5;
+                                isValid = true;
+                            }
+                            else
+                            {
+                                tries--;
+                                MessageBox.Show(String.Format("Błędna nazwa użytkownika lub hasło.\nPozostało prób: {0}", tries));
+                                return;
+                            }
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        using (Main main = new Main(LoginTXT.Text))
+                        {
+                            main.NameLabel.Text = FName + "\n" + SName;
+                            Hide();
+                            main.ShowDialog();
+                            Close();
+                        }
+                    }
                 }
             }
-
-            sqlCommand.Dispose();
-            sqlConnection.Dispose();
-
-            if (isValid)
-            {*/
-                Main main = new Main(LoginTXT.Text);
-                main.NameLabel.Text = FName + "\n" + SName;
-                this.Hide();
-                main.ShowDialog();
-                Dispose();
-                this.Close();
-            //}
         }
 
 
         private void RegisterButton_Click(object sender, EventArgs e)
         {
             this.Hide();
-            reg.ShowDialog();
-            Dispose();
-            this.Close();
+            using (Register reg = new Register())
+            {
+                reg.ShowDialog();
+                Dispose();
+                Close();
+            }
         }
 
 

@@ -15,8 +15,6 @@ namespace MyBookshelf
     public partial class Register : Form
     {
         readonly string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security = True";
-        SqlConnection sqlConnection;
-        SqlCommand sqlCommand;
         public Register()
         {
             InitializeComponent();
@@ -26,6 +24,8 @@ namespace MyBookshelf
 
         private void RegisterButton_Click(object sender, EventArgs e)
         {
+            string tempLog;
+            string tempEmail;
             LoginTXT.Text = LoginTXT.Text.Trim();
             PasswordTXT.Text = PasswordTXT.Text.Trim();
             EmailTXT.Text = EmailTXT.Text.Trim();
@@ -33,7 +33,7 @@ namespace MyBookshelf
             SNameTXT.Text = SNameTXT.Text.Trim();
             Regex regexLogin = new Regex(@"^[A-Za-z0-9]{4,20}$");
             Regex regexPwd = new Regex(@"^[\w\*\/\\\?\:\.\^\+\=]{5,20}$");
-            Regex regexEmail = new Regex(@"^[\w@]{1,50}$");
+            //Regex regexEmail = new Regex(@"^[\w@]{1,50}$");
 
 
             int error = 0;
@@ -73,7 +73,7 @@ namespace MyBookshelf
             {
                 labelSnameBottom.BackColor = Color.DarkGray;
             }
-            if (EmailTXT.Text == "" || !regexEmail.IsMatch(EmailTXT.Text))
+            if (EmailTXT.Text == "")
             {
                 labelEmailBottom.BackColor = Color.Red;
                 error++;
@@ -88,69 +88,86 @@ namespace MyBookshelf
                 return;
             }
 
-            sqlConnection = new SqlConnection(connectionString);
-            string sql = "SELECT COUNT(Login) FROM Users WHERE Login=@log";
-            sqlCommand = new SqlCommand(sql, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@log", LoginTXT.Text);
 
-            sqlConnection.Open();
-            string tempLog = sqlCommand.ExecuteScalar().ToString();
-
-            sql = "SELECT COUNT(Email) FROM Users WHERE Email=@email";
-            sqlCommand = new SqlCommand(sql, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@email", EmailTXT.Text);
-            string tempEmail = sqlCommand.ExecuteScalar().ToString();
-
-            if (tempLog != "0")
+            //Operacje na bazie danych
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                MessageBox.Show("Nazwa użytkownika zajęta");
-                sqlConnection.Dispose();
-                return;
+                //sqlConnection = new SqlConnection(connectionString);
+                string sql = "SELECT COUNT(Login) FROM Users WHERE Login=@log";
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@log", LoginTXT.Text);
+
+                    connection.Open();
+                    tempLog = command.ExecuteScalar().ToString();
+                }
+
+                sql = "SELECT COUNT(Email) FROM Users WHERE Email=@email";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@email", EmailTXT.Text);
+                    tempEmail = command.ExecuteScalar().ToString();
+
+                    if (tempLog != "0")
+                    {
+                        MessageBox.Show("Nazwa użytkownika zajęta");
+                        connection.Close();
+                        connection.Dispose();
+                        return;
+                    }
+                    if (tempEmail != "0")
+                    {
+                        MessageBox.Show("E-mail zajęty");
+                        return;
+                    }
+                }
+
+                //Hashowanie hasła
+                Hash hash = new Hash();
+                var salt = hash.PasswordSalt;
+                var pass = hash.EncodePassword(PasswordTXT.Text, salt);
+
+                sql = "INSERT INTO Users (Login,Password,Salt,Email,FName,SName) VALUES (@log,@pwd,@slt,@email,@fname,@sname)";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@log", LoginTXT.Text);
+                    command.Parameters.AddWithValue("@pwd", pass.ToString());
+                    command.Parameters.AddWithValue("@slt", salt.ToString());
+                    command.Parameters.AddWithValue("@email", EmailTXT.Text);
+                    command.Parameters.AddWithValue("@fname", FNameTXT.Text);
+                    command.Parameters.AddWithValue("@sname", SNameTXT.Text);
+
+                    command.ExecuteNonQuery();
+                }
             }
-            if (tempEmail != "0")
+            
+
+
+            Hide();
+            using (Login login = new Login())
             {
-                MessageBox.Show("E-mail zajęty");
+                login.LoginTXT.Text = LoginTXT.Text;
+                login.PasswordTXT.Text = PasswordTXT.Text;
+                login.labelLogin.Visible = false;
+                login.LabelPass.Visible = false;
+                login.ShowDialog();
+                Close();
             }
 
-
-            //Hashowanie hasła
-            Hash hash = new Hash();
-            var salt = hash.PasswordSalt;
-            var pass = hash.EncodePassword(PasswordTXT.Text, salt);
-
-            sql = "INSERT INTO Users (Login,Password,Salt,Email,FName,SName) VALUES (@log,@pwd,@slt,@email,@fname,@sname)";
-            sqlCommand = new SqlCommand(sql, sqlConnection);
-            sqlCommand.Parameters.Clear();
-            sqlCommand.Parameters.AddWithValue("@log", LoginTXT.Text);
-            sqlCommand.Parameters.AddWithValue("@pwd", pass.ToString());
-            sqlCommand.Parameters.AddWithValue("@slt", salt.ToString());
-            sqlCommand.Parameters.AddWithValue("@email", EmailTXT.Text);
-            sqlCommand.Parameters.AddWithValue("@fname", FNameTXT.Text);
-            sqlCommand.Parameters.AddWithValue("@sname", SNameTXT.Text);
-
-
-            sqlCommand.ExecuteNonQuery();
-
-            sqlConnection.Dispose();
-
-            this.Hide();
-            Login login = new Login();
-            login.LoginTXT.Text = LoginTXT.Text;
-            login.PasswordTXT.Text = PasswordTXT.Text;
-            login.labelLogin.Visible = false;
-            login.LabelPass.Visible = false;
-            login.ShowDialog();
-            login.Dispose();
-            this.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void LoginButton_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            Login login = new Login();
-            login.ShowDialog();
-            this.Dispose();
-            this.Close();
+            Hide();
+            using (Login login = new Login())
+            {
+                login.ShowDialog();
+                Dispose();
+                Close();
+            }
         }
 
 

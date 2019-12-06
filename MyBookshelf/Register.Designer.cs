@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Register));
             this.panelRegister = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.labelEmail = new System.Windows.Forms.Label();
@@ -51,7 +52,7 @@
             this.LoginTXT = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.LoginButton = new System.Windows.Forms.Button();
             this.RegisterButton = new System.Windows.Forms.Button();
             this.panelRegister.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -71,7 +72,7 @@
             this.panelRegister.Controls.Add(this.panel3);
             this.panelRegister.Controls.Add(this.panelLogin);
             this.panelRegister.Controls.Add(this.panel2);
-            this.panelRegister.Controls.Add(this.button1);
+            this.panelRegister.Controls.Add(this.LoginButton);
             this.panelRegister.Controls.Add(this.RegisterButton);
             this.panelRegister.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRegister.Location = new System.Drawing.Point(0, 0);
@@ -305,7 +306,7 @@
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.Color.DarkGreen;
+            this.panel2.BackColor = System.Drawing.Color.Orange;
             this.panel2.Controls.Add(this.label6);
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
@@ -323,24 +324,24 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Rejestracja";
             // 
-            // button1
+            // LoginButton
             // 
-            this.button1.BackColor = System.Drawing.Color.DarkGreen;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(179, 303);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(108, 37);
-            this.button1.TabIndex = 7;
-            this.button1.TabStop = false;
-            this.button1.Text = "Logowanie";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.LoginButton.BackColor = System.Drawing.Color.Orange;
+            this.LoginButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.LoginButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.LoginButton.ForeColor = System.Drawing.Color.White;
+            this.LoginButton.Location = new System.Drawing.Point(179, 303);
+            this.LoginButton.Name = "LoginButton";
+            this.LoginButton.Size = new System.Drawing.Size(108, 37);
+            this.LoginButton.TabIndex = 7;
+            this.LoginButton.TabStop = false;
+            this.LoginButton.Text = "Logowanie";
+            this.LoginButton.UseVisualStyleBackColor = false;
+            this.LoginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
             // RegisterButton
             // 
-            this.RegisterButton.BackColor = System.Drawing.Color.DarkGreen;
+            this.RegisterButton.BackColor = System.Drawing.Color.Orange;
             this.RegisterButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.RegisterButton.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.RegisterButton.ForeColor = System.Drawing.Color.White;
@@ -358,10 +359,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(299, 347);
             this.Controls.Add(this.panelRegister);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Register";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Rejestracja";
             this.Load += new System.EventHandler(this.Register_Load);
@@ -385,7 +386,7 @@
         #endregion
 
         private System.Windows.Forms.Panel panelRegister;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button LoginButton;
         private System.Windows.Forms.TextBox EmailTXT;
         private System.Windows.Forms.TextBox PasswordTXT;
         private System.Windows.Forms.TextBox LoginTXT;
