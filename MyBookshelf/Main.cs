@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Text.RegularExpressions;
 
 namespace MyBookshelf
 {
@@ -18,8 +17,6 @@ namespace MyBookshelf
         private bool isEdit = false; //Czy włączona jest edycja wiersza
         private bool isAdded = false; //Czy jest dodany nowy pusty wiersz
         readonly string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security = True";
-        private SqlConnection sqlConnection;
-        private SqlCommand sqlCommand;
         private DataTable dt = new DataTable();
         private List<string> listDeleted = new List<string>(); //ID usuniętych wierszy
 
@@ -48,30 +45,10 @@ namespace MyBookshelf
             SaveButton.Enabled = true;
             RightPanelLibraries.Visible = false;
             RightPanel.Visible = true;
-            sqlConnection = new SqlConnection(connectionString);
-            string sql;
-            if (login == "admin")
-            {
-                sql = "SELECT ID,Login,Book,Author,TimeToReturn,Library FROM Books";
-                sqlCommand = new SqlCommand(sql, sqlConnection);
-            }
-            else
-            {
-                sql = "SELECT ID,Login,Book, Author, TimeToReturn, Library FROM Books WHERE Login=@log";
-                sqlCommand = new SqlCommand(sql, sqlConnection);
-                sqlCommand.Parameters.Clear();
-                sqlCommand.Parameters.AddWithValue("@log", login);
-            }
-
-            sqlConnection.Open();
             dt.Clear();
+            MainView.DataSource = dbConnection.FillTable(login, dt);
 
-            using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
-            {
-                adapter.Fill(dt);
-                MainView.DataSource = dt;
 
-            }
             if (dt.Rows.Count == 0)
             {
                 DataRow dr = dt.NewRow();
@@ -84,7 +61,6 @@ namespace MyBookshelf
                 MainView.ReadOnly = true;
                 isAdded = true;
             }
-            sqlConnection.Close();
             var col = MainView.Columns;
             //Ustawienie parametrów kolumn
             col[0].Visible = false;
@@ -101,27 +77,8 @@ namespace MyBookshelf
             //Dodanie kolumny z wyborem biblioteki
             if (MainView.Columns.Count == 6)
             {
-                sqlCommand = new SqlCommand("SELECT L.Id,L.Name,B.Name FROM Libraries as L, Books as B", sqlConnection);
+                DataTable table = dbConnection.ComboBoxQuery(MainView);
 
-
-                DataTable table = new DataTable();
-                foreach (DataGridViewRow row in MainView.Rows)
-                {
-                    table = new DataTable();
-
-                    sql = "SELECT Id, Name FROM Libraries";
-                    using (sqlConnection = new SqlConnection(connectionString))
-                    {
-                        using (sqlCommand = new SqlCommand(sql, sqlConnection))
-                        {
-                            sqlCommand.CommandType = CommandType.Text;
-                            using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
-                            {
-                                adapter.Fill(table);
-                            }
-                        }
-                    }
-                }
                 DataGridViewComboBoxColumn comboBoxColumn = new DataGridViewComboBoxColumn
                 {
                     HeaderText = "Biblioteka",
@@ -201,30 +158,10 @@ namespace MyBookshelf
             // TODO: This line of code loads data into the 'databaseDataSet.Libraries' table. You can move, or remove it, as needed.
             this.librariesTableAdapter.Fill(this.databaseDataSet.Libraries);
 
-            string sql;
             MainView.AllowUserToAddRows = false;
-            sqlConnection = new SqlConnection(connectionString);
 
-            if (login == "admin")
-            {
-                SaveButton.Visible = true;
-                AddButton.Visible = true;
-                sql = "SELECT COUNT(*) FROM Books";
-                sqlCommand = new SqlCommand(sql, sqlConnection);
-            }
-            else
-            {
-                SaveButton.Visible = true;
-                AddButton.Visible = true;
-                sql = "SELECT COUNT(*) FROM Books WHERE Login=@log";
-                sqlCommand = new SqlCommand(sql, sqlConnection);
-                sqlCommand.Parameters.Clear();
-                sqlCommand.Parameters.AddWithValue("@log", login);
-            }
+            BooksButton.Text = dbConnection.UpdateCounter(login);
 
-            sqlConnection.Open();
-            BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
-            sqlConnection.Close();
 
             BooksButton_Click(BooksButton, e);
         }
@@ -344,64 +281,18 @@ namespace MyBookshelf
             {
                 if (!isAdded && !isEdit)
                 {
-                    using (sqlConnection = new SqlConnection(connectionString))
-                    {
-                        //Update bazy danych
-                        sqlConnection.Open();
-                        //Adapter do porównania bazy danych z DataTable
-                        using (SqlDataAdapter adapter = new SqlDataAdapter())
-                        {
-                            adapter.SelectCommand = new SqlCommand("SELECT * FROM Books", sqlConnection);
-                            using (SqlCommandBuilder builder = new SqlCommandBuilder(adapter))
-                            {
-                                adapter.Update(dt);
+                    List<object> list = dbConnection.CreateAdapter(listDeleted, dt);
+                    dt = (DataTable)list[1];
+                    MainView.DataSource = dt;
+                    listDeleted = (List<string>)list[0];
 
-                                //Usuwanie z bazy danych
-                                if (listDeleted.Count != 0)
-                                {
-                                    foreach (var index in listDeleted)
-                                    {
-                                        adapter.DeleteCommand = new SqlCommand("DELETE FROM Books WHERE Id=@id", sqlConnection);
-                                        adapter.DeleteCommand.Parameters.Clear();
-                                        adapter.DeleteCommand.Parameters.AddWithValue("@id", index);
-                                        adapter.DeleteCommand.ExecuteNonQuery();
-                                    }
-                                    listDeleted.Clear();
-                                }
+                    CheckDate();
 
-                                MainView.DataSource = dt;
-                                sqlConnection.Close();
-                            }
-                        }
-
-                        //Update licznika książek
-                        if (login != "admin")
-                        {
-                            string sql = "SELECT COUNT(Book) FROM Books WHERE Login=@log";
-                            sqlConnection.Open();
-                            sqlCommand = new SqlCommand(sql, sqlConnection);
-
-                            sqlCommand.Parameters.Clear();
-                            sqlCommand.Parameters.AddWithValue("@log", login);
-                            BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
-                            sqlConnection.Close();
-                        }
-                        else
-                        {
-                            string sql = "SELECT COUNT(Book) FROM Books";
-                            sqlConnection.Open();
-                            sqlCommand = new SqlCommand(sql, sqlConnection);
-
-                            BooksButton.Text = "Książki     " + sqlCommand.ExecuteScalar().ToString();
-                            sqlConnection.Close();
-                        }
-
-                        MainView.AllowUserToAddRows = false;
-                        MainView.DataSource = dt;
-                        CheckDate();
-                        LibrariesButton.Enabled = true;
-                    }
+                    LibrariesButton.Enabled = true;
                     MainView.AllowUserToAddRows = false;
+
+                    //Update licznika książek
+                    BooksButton.Text = dbConnection.UpdateCounter(login);
                 }
             }
 
@@ -455,7 +346,7 @@ namespace MyBookshelf
                 return;
             }
 
-            if (e.RowIndex != rowIndex && e.RowIndex >= 0 && e.ColumnIndex >= 0 && isEdit == true)
+            if (e.RowIndex != rowIndex && e.ColumnIndex >= 0 && isEdit == true)
             {
                 try
                 {
@@ -520,6 +411,7 @@ namespace MyBookshelf
                 else
                 {
                     MainView.Rows[rowIndex].Selected = true;
+                    MainView_CellClick(sender, new DataGridViewCellEventArgs(e.ColumnIndex, e.RowIndex));
                 }
 
             }
@@ -532,20 +424,13 @@ namespace MyBookshelf
 
         private void MainView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-
             var senderGrid = (DataGridView)sender;
             if (e.ColumnIndex == 6 && e.RowIndex >= 0 && !isEdit && !isAdded)
             {
                 try
                 {
-                    sqlConnection = new SqlConnection(connectionString);
-                    string sql = "SELECT ID FROM Libraries WHERE Name=@name";
-                    sqlCommand = new SqlCommand(sql, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@name", senderGrid.Rows[e.RowIndex].Cells[6].Value.ToString());
-                    sqlConnection.Open();
-                    var index = sqlCommand.ExecuteScalar();
-                    sqlConnection.Close();
-                    if (index != null)
+                    int index = dbConnection.ReturnIndex(senderGrid.Rows[e.RowIndex].Cells[6].Value.ToString());
+                    if (index != 0)
                     {
                         LibrariesButton_Click(sender, e);
                         for (int i = 0; i < LibrariesView.Rows.Count; i++)
@@ -560,14 +445,21 @@ namespace MyBookshelf
                             LibrariesView.Rows[(int)index].Cells[i].Style.BackColor = Color.LightGreen;
                         }
                     }
-
-
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.ToString());
                     return;
                 }
+            }
+        }
+
+        private void MainView_MouseClick(object sender, MouseEventArgs e)
+        {
+            var ht = MainView.HitTest(e.X, e.Y);
+            if (ht.Type == DataGridViewHitTestType.None && isEdit)
+            {
+                MainView_CellClick(sender, new DataGridViewCellEventArgs(1, -1));
             }
         }
     }

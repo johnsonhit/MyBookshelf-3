@@ -90,7 +90,6 @@
             this.SaveButton.TabIndex = 2;
             this.SaveButton.Text = "Zapisz";
             this.SaveButton.UseVisualStyleBackColor = false;
-            this.SaveButton.Visible = false;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // AddButton
@@ -105,7 +104,6 @@
             this.AddButton.TabIndex = 1;
             this.AddButton.Text = "Dodaj";
             this.AddButton.UseVisualStyleBackColor = false;
-            this.AddButton.Visible = false;
             this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
             // ExitButton
@@ -216,6 +214,7 @@
             this.MainView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainView_CellDoubleClick);
             this.MainView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainView_ColumnHeaderMouseClick);
             this.MainView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.MainView_DataError);
+            this.MainView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MainView_MouseClick);
             // 
             // RightPanelLibraries
             // 
