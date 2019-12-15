@@ -42,6 +42,8 @@ namespace MyBookshelf
 
         private void BooksButton_Click(object sender, EventArgs e)
         {
+            MainView.DataSource = null;
+            MainView.Columns.Clear();
             AddButton.Enabled = true;
             SaveButton.Enabled = true;
             RightPanelLibraries.Visible = false;
@@ -64,8 +66,6 @@ namespace MyBookshelf
             sqlConnection.Open();
             dt.Clear();
 
-
-
             using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
             {
                 adapter.Fill(dt);
@@ -86,6 +86,7 @@ namespace MyBookshelf
             }
             sqlConnection.Close();
             var col = MainView.Columns;
+            //Ustawienie parametrów kolumn
             col[0].Visible = false;
             col[1].Visible = false;
             col[2].HeaderText = "Tytuł";
@@ -93,25 +94,20 @@ namespace MyBookshelf
             col[4].HeaderText = "Termin zwrotu";
             col[4].Name = "ReturnTime";
             col[5].Name = "Library";
-            col[5].HeaderText = "Biblioteka";
             col[5].Visible = false;
             col[3].DefaultCellStyle.BackColor = Color.Gainsboro;
-            col[5].DefaultCellStyle.BackColor = Color.Gainsboro;
             col[3].DefaultCellStyle.SelectionBackColor = Color.Gainsboro;
-            col[5].DefaultCellStyle.SelectionBackColor = Color.Gainsboro;
 
-
+            //Dodanie kolumny z wyborem biblioteki
             if (MainView.Columns.Count == 6)
             {
                 sqlCommand = new SqlCommand("SELECT L.Id,L.Name,B.Name FROM Libraries as L, Books as B", sqlConnection);
-                DataGridViewComboBoxColumn comboBoxColumn = new DataGridViewComboBoxColumn();
-                comboBoxColumn.HeaderText = "Biblioteka";
-                MainView.Columns.Add(comboBoxColumn);
+
+
                 DataTable table = new DataTable();
                 foreach (DataGridViewRow row in MainView.Rows)
                 {
                     table = new DataTable();
-
 
                     sql = "SELECT Id, Name FROM Libraries";
                     using (sqlConnection = new SqlConnection(connectionString))
@@ -126,10 +122,14 @@ namespace MyBookshelf
                         }
                     }
                 }
-                comboBoxColumn.ValueMember = "Name";
-                comboBoxColumn.DisplayMember = "Name";
-                comboBoxColumn.DataSource = table;
-
+                DataGridViewComboBoxColumn comboBoxColumn = new DataGridViewComboBoxColumn
+                {
+                    HeaderText = "Biblioteka",
+                    ValueMember = "Name",
+                    DisplayMember = "Name",
+                    DataSource = table
+                };
+                MainView.Columns.Add(comboBoxColumn);
                 foreach (DataGridViewRow row in MainView.Rows)
                 {
                     DataGridViewComboBoxCell comboBoxCell = row.Cells[6] as DataGridViewComboBoxCell;
@@ -139,25 +139,19 @@ namespace MyBookshelf
                     }
                     catch (Exception)
                     {
-
+                        return;
                     }
-                   
                 }
 
                 var graphics = CreateGraphics();
 
                 if (table.Rows.Count > 0)
                 {
-                    comboBoxColumn.DropDownWidth = (from width in
-           (from DataRow item in table.Rows
-            select Convert.ToInt32(graphics.MeasureString(item["Name"].ToString(), Font).Width))
-                                                    select width).Max();
+                    comboBoxColumn.DropDownWidth = (from width in (from DataRow item in table.Rows select Convert.ToInt32(graphics.MeasureString(item["Name"].ToString(), Font).Width)) select width).Max();
                 }
-
             }
 
-
-
+            //Dodanie kolumny z przyciskami edytuj i usuń
             if (MainView.Columns.Count == 7)
             {
                 DataGridViewButtonColumn EditColumn = new DataGridViewButtonColumn
@@ -191,6 +185,12 @@ namespace MyBookshelf
                 {
                     row.Cells[i].Style.BackColor = default;
                 }
+            }
+
+            foreach (DataGridViewColumn column in MainView.Columns
+                )
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
 
             CheckDate();
@@ -227,7 +227,6 @@ namespace MyBookshelf
             sqlConnection.Close();
 
             BooksButton_Click(BooksButton, e);
-
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
@@ -267,8 +266,6 @@ namespace MyBookshelf
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show(ex.ToString());
-                    //MessageBox.Show("BŁĄD");
                     isAdded = false;
                     isEdit = false;
                     return;
@@ -322,7 +319,6 @@ namespace MyBookshelf
                     isEdit = false;
                     isAdded = true;
                     MainView.ReadOnly = true;
-
                 }
 
                 isAdded = true;
@@ -337,15 +333,13 @@ namespace MyBookshelf
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString());
                 MessageBox.Show("Żadne pole nie może pozostać puste");
             }
-
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-
             try
             {
                 if (!isAdded && !isEdit)
@@ -409,13 +403,11 @@ namespace MyBookshelf
                     }
                     MainView.AllowUserToAddRows = false;
                 }
-
-
             }
 
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString());
                 MainView.AllowUserToAddRows = false;
                 MessageBox.Show("Żadne pole nie może pozostać puste");
             }
@@ -423,7 +415,6 @@ namespace MyBookshelf
 
         private void CheckDate()
         {
-
             foreach (DataRow item in dt.Rows)
             {
                 try
@@ -436,11 +427,10 @@ namespace MyBookshelf
                         MainView.Rows[dt.Rows.IndexOf(item)].Cells["ReturnTime"].Style.SelectionBackColor = Color.Red;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    return;
                 }
-
             }
         }
 
@@ -501,7 +491,6 @@ namespace MyBookshelf
 
         private void LibrariesButton_Click(object sender, EventArgs e)
         {
-            //RightPanel.Visible = false;
             RightPanelLibraries.Visible = true;
             LibrariesView.Columns[0].Visible = false;
             AddButton.Enabled = false;
@@ -532,14 +521,13 @@ namespace MyBookshelf
                 {
                     MainView.Rows[rowIndex].Selected = true;
                 }
-                
+
             }
             catch (Exception)
             {
-
                 return;
             }
-            
+
         }
 
         private void MainView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -577,7 +565,8 @@ namespace MyBookshelf
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString());
+                    return;
                 }
             }
         }

@@ -228,6 +228,11 @@
             // 
             // LibrariesView
             // 
+            this.LibrariesView.AllowUserToAddRows = false;
+            this.LibrariesView.AllowUserToDeleteRows = false;
+            this.LibrariesView.AllowUserToOrderColumns = true;
+            this.LibrariesView.AllowUserToResizeColumns = false;
+            this.LibrariesView.AllowUserToResizeRows = false;
             this.LibrariesView.AutoGenerateColumns = false;
             this.LibrariesView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.LibrariesView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;

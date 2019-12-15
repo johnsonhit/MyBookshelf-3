@@ -9,7 +9,7 @@ namespace MyBookshelf
 {
     class Hash
     {
-        public string PasswordSalt
+        public static string PasswordSalt
         {
             get
             {
@@ -21,7 +21,7 @@ namespace MyBookshelf
             }
         }
 
-        public string EncodePassword(string password, string salt)
+        public static string EncodePassword(string password, string salt)
         {
             byte[] bytes = Encoding.Unicode.GetBytes(password);
             byte[] src = Encoding.Unicode.GetBytes(salt);

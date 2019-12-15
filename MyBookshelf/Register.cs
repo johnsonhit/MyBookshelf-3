@@ -124,9 +124,9 @@ namespace MyBookshelf
                 }
 
                 //Hashowanie hasła
-                Hash hash = new Hash();
-                var salt = hash.PasswordSalt;
-                var pass = hash.EncodePassword(PasswordTXT.Text, salt);
+                //Hash hash = new Hash();
+                var salt = Hash.PasswordSalt;
+                var pass = Hash.EncodePassword(PasswordTXT.Text, salt);
 
                 sql = "INSERT INTO Users (Login,Password,Salt,Email,FName,SName) VALUES (@log,@pwd,@slt,@email,@fname,@sname)";
 

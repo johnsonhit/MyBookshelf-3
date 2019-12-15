@@ -15,12 +15,10 @@ namespace MyBookshelf
     public partial class Login : Form
     {
         readonly string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security = True";
-        //private SqlConnection sqlConnection;
         private int tries = 5;
         private bool isValid = false;
         private string FName;
         private string SName;
-        //SqlDataReader dataReader;
         public Login()
         {
             InitializeComponent();
@@ -43,7 +41,6 @@ namespace MyBookshelf
                 MessageBox.Show(String.Format("Błędna nazwa użytkownika lub hasło.\n Pozostało prób: {0}", tries));
                 return;
             }
-            Hash hash = new Hash();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -70,7 +67,7 @@ namespace MyBookshelf
                             FName = dataReader[2].ToString();
                             SName = dataReader[3].ToString();
                             var tempSalt = dataReader[1];
-                            if (hash.EncodePassword(PasswordTXT.Text, tempSalt.ToString()) == dataReader[0].ToString())
+                            if (Hash.EncodePassword(PasswordTXT.Text, tempSalt.ToString()) == dataReader[0].ToString())
                             {
                                 tries = 5;
                                 isValid = true;
